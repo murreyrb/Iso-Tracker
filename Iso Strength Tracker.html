@@ -1,0 +1,944 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Iso Tracker">
+    <meta name="theme-color" content="#0f172a">
+    <meta name="description" content="Track isometric holds, knee/shoulder stability, and athletic performance">
+    <title>Iso Strength Tracker</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/png" sizes="192x192" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect fill='%230284c7' width='192' height='192'/><text x='50%' y='50%' font-size='120' fill='white' text-anchor='middle' dominant-baseline='middle'>🏋️</text></svg>">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'><rect fill='%230284c7' width='180' height='180' rx='40'/><text x='50%' y='50%' font-size='100' fill='white' text-anchor='middle' dominant-baseline='middle'>🏋️</text></svg>">
+    <style>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Iso Tracker">
+    <meta name="theme-color" content="#0f172a">
+    <meta name="description" content="Track isometric holds, knee/shoulder stability, and athletic performance">
+    <title>Iso Strength Tracker</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/png" sizes="192x192" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect fill='%230284c7' width='192' height='192'/><text x='50%' y='50%' font-size='120' fill='white' text-anchor='middle' dominant-baseline='middle'>🏋️</text></svg>">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'><rect fill='%230284c7' width='180' height='180' rx='40'/><text x='50%' y='50%' font-size='100' fill='white' text-anchor='middle' dominant-baseline='middle'>🏋️</text></svg>">
+    <style>
+        :root {
+            --color-primary: #38bdf8;
+            --color-primary-hover: #0284c7;
+            --color-bg-primary: #0f172a;
+            --color-bg-secondary: #1e293b;
+            --color-text-primary: #f1f5f9;
+            --color-text-secondary: #cbd5e1;
+            --color-text-muted: #94a3b8;
+            --color-success: #10b981;
+            --color-warning: #f59e0b;
+            --color-error: #ef4444;
+            --color-better: #10b981;
+            --color-same: #94a3b8;
+            --color-worse: #ef4444;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: var(--color-bg-primary);
+            color: var(--color-text-primary);
+            line-height: 1.5;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-hover) 100%);
+            padding: 30px 0;
+            margin: -20px -20px 30px -20px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 5px;
+            color: white;
+        }
+
+        header p {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 1.1rem;
+        }
+
+        nav {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        nav button {
+            padding: 10px 20px;
+            background-color: var(--color-bg-secondary);
+            color: var(--color-text-primary);
+            border: 2px solid var(--color-primary);
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        nav button.active {
+            background-color: var(--color-primary);
+            color: white;
+        }
+
+        nav button:hover {
+            background-color: var(--color-primary);
+            color: white;
+        }
+
+        .screen {
+            display: none;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        .card {
+            background-color: var(--color-bg-secondary);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .card h2 {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            color: var(--color-primary);
+        }
+
+        .card h3 {
+            font-size: 1.1rem;
+            margin-top: 15px;
+            margin-bottom: 10px;
+            color: var(--color-text-primary);
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            font-size: 0.9rem;
+            color: var(--color-text-secondary);
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 10px;
+            background-color: var(--color-bg-primary);
+            color: var(--color-text-primary);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 6px;
+            font-size: 1rem;
+            font-family: inherit;
+            margin-bottom: 5px;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--color-primary);
+            box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.1);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        button.btn {
+            padding: 12px 24px;
+            background-color: var(--color-primary);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s;
+            margin-top: 10px;
+        }
+
+        button.btn:hover {
+            background-color: var(--color-primary-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(2, 132, 199, 0.3);
+        }
+
+        button.btn:active {
+            transform: translateY(0);
+        }
+
+        button.btn-secondary {
+            background-color: var(--color-bg-secondary);
+            border: 2px solid var(--color-primary);
+            color: var(--color-primary);
+            padding: 10px 20px;
+            margin: 5px;
+        }
+
+        button.btn-secondary:hover {
+            background-color: var(--color-primary);
+            color: white;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .status-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .status-btn {
+            flex: 1;
+            padding: 10px;
+            border: 2px solid currentColor;
+            background: transparent;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .status-btn.better {
+            color: var(--color-better);
+        }
+
+        .status-btn.better.selected {
+            background-color: var(--color-better);
+            color: white;
+        }
+
+        .status-btn.same {
+            color: var(--color-same);
+        }
+
+        .status-btn.same.selected {
+            background-color: var(--color-same);
+            color: white;
+        }
+
+        .status-btn.worse {
+            color: var(--color-error);
+        }
+
+        .status-btn.worse.selected {
+            background-color: var(--color-error);
+            color: white;
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        thead {
+            background-color: rgba(56, 189, 248, 0.1);
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        th {
+            font-weight: 600;
+            color: var(--color-primary);
+            font-size: 0.9rem;
+        }
+
+        tr:hover {
+            background-color: rgba(56, 189, 248, 0.05);
+        }
+
+        td small {
+            color: var(--color-text-muted);
+            display: block;
+        }
+
+        .stat-box {
+            background-color: var(--color-bg-primary);
+            padding: 15px;
+            border-radius: 6px;
+            border-left: 4px solid var(--color-primary);
+            text-align: center;
+        }
+
+        .stat-box .number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--color-primary);
+            margin-bottom: 5px;
+        }
+
+        .stat-box .label {
+            font-size: 0.9rem;
+            color: var(--color-text-secondary);
+        }
+
+        .alert {
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            border-left: 4px solid;
+        }
+
+        .alert-success {
+            background-color: rgba(16, 185, 129, 0.1);
+            border-left-color: var(--color-success);
+            color: var(--color-success);
+        }
+
+        .alert-info {
+            background-color: rgba(56, 189, 248, 0.1);
+            border-left-color: var(--color-primary);
+            color: var(--color-primary);
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background-color: var(--color-bg-primary);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background-color: var(--color-primary);
+            transition: width 0.3s;
+        }
+
+        .workout-day-selector {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .day-btn {
+            padding: 15px;
+            text-align: center;
+            background-color: var(--color-bg-secondary);
+            border: 2px solid var(--color-text-muted);
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            color: var(--color-text-secondary);
+        }
+
+        .day-btn:hover, .day-btn.selected {
+            border-color: var(--color-primary);
+            background-color: var(--color-primary);
+            color: white;
+        }
+
+        .exercise-block {
+            background-color: var(--color-bg-primary);
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .exercise-block h4 {
+            color: var(--color-primary);
+            margin-bottom: 10px;
+            font-size: 1rem;
+        }
+
+        .exercise-block p {
+            font-size: 0.9rem;
+            color: var(--color-text-secondary);
+            margin-bottom: 5px;
+        }
+
+        .delete-btn {
+            background-color: var(--color-error);
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            margin-top: 10px;
+        }
+
+        .delete-btn:hover {
+            background-color: #dc2626;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            background-color: var(--color-primary);
+            color: white;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-right: 5px;
+            margin-bottom: 5px;
+        }
+
+        .badge-better { background-color: var(--color-better); }
+        .badge-same { background-color: var(--color-same); }
+        .badge-worse { background-color: var(--color-error); }
+
+        @media (max-width: 768px) {
+            .grid-2 { grid-template-columns: 1fr; }
+            header h1 { font-size: 1.8rem; }
+            nav { gap: 5px; }
+            nav button { padding: 8px 12px; font-size: 0.9rem; }
+            .workout-day-selector { grid-template-columns: 1fr; }
+            body { padding-top: env(safe-area-inset-top); padding-bottom: env(safe-area-inset-bottom); }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>🏋️ Iso Strength Tracker</h1>
+            <p>Track isometric holds, knee/shoulder stability, and athletic performance</p>
+        </div>
+    </header>
+
+    <div class="container">
+        <nav>
+            <button class="nav-btn active" data-screen="log-set">📝 Log Set</button>
+            <button class="nav-btn" data-screen="todays-plan">📋 Today's Plan</button>
+            <button class="nav-btn" data-screen="progress">📊 Progress</button>
+            <button class="nav-btn" data-screen="history">📜 History</button>
+        </nav>
+
+        <!-- Screen 1: Log Set -->
+        <div id="log-set" class="screen active">
+            <div class="card">
+                <h2>Log Your Set</h2>
+                <div id="form-messages"></div>
+
+                <div class="workout-day-selector">
+                    <button class="day-btn" data-day="1">Day 1<br><small>Lower + Pull</small></button>
+                    <button class="day-btn" data-day="2">Day 2<br><small>Upper + Row</small></button>
+                    <button class="day-btn" data-day="3">Day 3<br><small>Mixed Athletic</small></button>
+                </div>
+
+                <form id="log-form">
+                    <div class="grid-2">
+                        <div class="form-group">
+                            <label>Date</label>
+                            <input type="date" id="date" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Day (Auto-filled)</label>
+                            <input type="text" id="dayDisplay" readonly>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Exercise Name *</label>
+                        <select id="exercise" required>
+                            <option value="">Select exercise...</option>
+                            <optgroup label="Knee Stability">
+                                <option value="Side-lying hip abduction">Side-lying hip abduction</option>
+                                <option value="Spanish squat isometric">Spanish squat isometric</option>
+                                <option value="Single-leg balance">Single-leg balance</option>
+                            </optgroup>
+                            <optgroup label="Shoulder Stability">
+                                <option value="Scap push-ups">Scap push-ups</option>
+                                <option value="Band external rotation">Band external rotation</option>
+                                <option value="Y-T-W isometric holds">Y-T-W isometric holds</option>
+                            </optgroup>
+                            <optgroup label="Lower + Pull">
+                                <option value="Box jump + iso squat">Box jump + iso squat</option>
+                                <option value="Supported split-squat iso">Supported split-squat iso</option>
+                                <option value="Pull-ups explode + hold">Pull-ups explode + hold</option>
+                                <option value="Monkey-bar rows fast + hold">Monkey-bar rows fast + hold</option>
+                            </optgroup>
+                            <optgroup label="Upper + Row">
+                                <option value="Plyo push-ups + mid-range iso">Plyo push-ups + mid-range iso</option>
+                                <option value="Med-ball chest pass + wall iso">Med-ball chest pass + wall iso</option>
+                                <option value="Row machine power + hinge iso">Row machine power + hinge iso</option>
+                                <option value="Anti-rotation core with band">Anti-rotation core with band</option>
+                            </optgroup>
+                            <optgroup label="Mixed Athletic">
+                                <option value="Depth-controlled land + squat iso">Depth-controlled land + squat iso</option>
+                                <option value="Step-up + hold">Step-up + hold</option>
+                                <option value="Med-ball power + matching iso">Med-ball power + matching iso</option>
+                                <option value="Hanging iso from pull-up bar">Hanging iso from pull-up bar</option>
+                            </optgroup>
+                        </select>
+                    </div>
+
+                    <div class="grid-2">
+                        <div class="form-group">
+                            <label>Side</label>
+                            <select id="side">
+                                <option value="Both">Both</option>
+                                <option value="Left">Left</option>
+                                <option value="Right">Right</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Set Number</label>
+                            <input type="number" id="setNumber" min="1" value="1">
+                        </div>
+                    </div>
+
+                    <div class="grid-2">
+                        <div class="form-group">
+                            <label>Reps (for dynamics)</label>
+                            <input type="number" id="reps" min="0">
+                        </div>
+                        <div class="form-group">
+                            <label>Hold Seconds (for isometrics)</label>
+                            <input type="number" id="holdSeconds" min="0" step="1">
+                        </div>
+                    </div>
+
+                    <div class="grid-2">
+                        <div class="form-group">
+                            <label>Load/Resistance</label>
+                            <input type="text" id="load" placeholder="e.g., 35 lb DB, red band, bodyweight">
+                        </div>
+                        <div class="form-group">
+                            <label>RPE (1-10)</label>
+                            <input type="number" id="rpe" min="1" max="10">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Knee Status</label>
+                        <div class="status-buttons">
+                            <button type="button" class="status-btn better" data-status="knee-better">Better</button>
+                            <button type="button" class="status-btn same" data-status="knee-same">Same</button>
+                            <button type="button" class="status-btn worse" data-status="knee-worse">Worse</button>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Shoulder Status</label>
+                        <div class="status-buttons">
+                            <button type="button" class="status-btn better" data-status="shoulder-better">Better</button>
+                            <button type="button" class="status-btn same" data-status="shoulder-same">Same</button>
+                            <button type="button" class="status-btn worse" data-status="shoulder-worse">Worse</button>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Notes</label>
+                        <textarea id="notes" placeholder="Pain, instability, fatigue, box height, form notes..."></textarea>
+                    </div>
+
+                    <button type="submit" class="btn">💾 Save Set</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Screen 2: Today's Plan -->
+        <div id="todays-plan" class="screen">
+            <div class="card">
+                <h2>Today's Workout Plan</h2>
+                <div id="plan-selector" class="workout-day-selector" style="margin-bottom: 20px;"></div>
+
+                <div id="plan-content"></div>
+            </div>
+        </div>
+
+        <!-- Screen 3: Progress -->
+        <div id="progress" class="screen">
+            <div class="card">
+                <h2>Progress Overview</h2>
+
+                <div class="grid-3">
+                    <div class="stat-box">
+                        <div class="number" id="total-sessions">0</div>
+                        <div class="label">Total Sessions</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="number" id="avg-hold-time">0s</div>
+                        <div class="label">Avg Hold Time</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="number" id="avg-rpe">0</div>
+                        <div class="label">Avg RPE</div>
+                    </div>
+                </div>
+
+                <h3 style="margin-top: 30px; margin-bottom: 15px;">Key Metrics by Exercise</h3>
+                <div id="exercise-metrics" class="table-responsive"></div>
+
+                <h3 style="margin-top: 30px; margin-bottom: 15px;">Knee/Shoulder Trend (Last 10)</h3>
+                <div id="status-trend"></div>
+            </div>
+        </div>
+
+        <!-- Screen 4: History -->
+        <div id="history" class="screen">
+            <div class="card">
+                <h2>Workout History</h2>
+                <div style="margin-bottom: 15px;">
+                    <button class="btn-secondary" id="clear-data">🗑️ Clear All Data</button>
+                    <button class="btn-secondary" id="export-data">📥 Export as JSON</button>
+                </div>
+                <div id="history-table" class="table-responsive"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Register Service Worker for offline support
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('data:application/javascript,' + encodeURIComponent(`
+                self.addEventListener('install', event => {
+                    console.log('Service Worker installed');
+                    self.skipWaiting();
+                });
+                self.addEventListener('activate', event => {
+                    console.log('Service Worker activated');
+                    event.waitUntil(clients.claim());
+                });
+            `)).catch(err => console.log('SW registration failed:', err));
+        }
+
+        // Initialize data structure
+        let workoutLog = JSON.parse(localStorage.getItem('workoutLog')) || [];
+        let selectedDay = null;
+        let selectedKneeStatus = null;
+        let selectedShoulderStatus = null;
+
+        const dayPlans = {
+            1: {
+                name: "Day 1 – Lower + Pull + Knee Stability",
+                exercises: [
+                    { name: "Knee Stability Block", type: "Warmup", details: "Side-lying hip abduction, Spanish squat iso, Single-leg balance (3 drills)" },
+                    { name: "Box jump → iso squat", type: "Main", details: "Power + isometric hold" },
+                    { name: "Supported split-squat iso", type: "Main", details: "Unilateral iso work" },
+                    { name: "Pull-ups explode → hold", type: "Main", details: "Explosive + isometric" },
+                    { name: "Monkey-bar rows fast → hold", type: "Main", details: "Fast reps + end hold" }
+                ]
+            },
+            2: {
+                name: "Day 2 – Upper + Row + Shoulder Stability",
+                exercises: [
+                    { name: "Shoulder Stability Block", type: "Warmup", details: "Scap push-ups, Band external rotation, Y-T-W holds" },
+                    { name: "Plyo push-ups → mid-range iso", type: "Main", details: "Plyometric + isometric" },
+                    { name: "Med-ball chest pass → wall push iso", type: "Main", details: "Power transfer + iso" },
+                    { name: "Row machine power → hinge iso", type: "Main", details: "Explosive rows + posterior chain iso" },
+                    { name: "Anti-rotation core with band", type: "Main", details: "Core stability" }
+                ]
+            },
+            3: {
+                name: "Day 3 – Mixed Athletic + Knee/Shoulder Touch-up",
+                exercises: [
+                    { name: "Knee Stability Block (lighter)", type: "Warmup", details: "Light version if sore" },
+                    { name: "Depth-controlled land → squat iso", type: "Main", details: "Landing mechanics + iso" },
+                    { name: "Step-up → hold", type: "Main", details: "Unilateral strength" },
+                    { name: "Med-ball power → matching iso", type: "Main", details: "Power + stability" },
+                    { name: "Hanging iso from pull-up bar", type: "Main", details: "Full-body tension" },
+                    { name: "Optional light scap push-ups or Y-T-W", type: "Optional", details: "Light shoulder work" }
+                ]
+            }
+        };
+
+        // Set today's date
+        document.getElementById('date').valueAsDate = new Date();
+
+        // Event listeners
+        document.querySelectorAll('.nav-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+                document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                document.getElementById(btn.dataset.screen).classList.add('active');
+                
+                if (btn.dataset.screen === 'todays-plan') renderPlanSelector();
+                if (btn.dataset.screen === 'progress') updateProgress();
+                if (btn.dataset.screen === 'history') renderHistory();
+            });
+        });
+
+        // Day selector for logging
+        document.querySelectorAll('.day-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.day-btn').forEach(b => b.classList.remove('selected'));
+                btn.classList.add('selected');
+                selectedDay = btn.dataset.day;
+                document.getElementById('dayDisplay').value = `Day ${selectedDay}`;
+            });
+        });
+
+        // Status button handlers
+        document.querySelectorAll('.status-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                const status = btn.dataset.status;
+                const [type, value] = status.split('-');
+                
+                if (type === 'knee') {
+                    document.querySelectorAll('[data-status^="knee"]').forEach(b => b.classList.remove('selected'));
+                    selectedKneeStatus = value;
+                } else if (type === 'shoulder') {
+                    document.querySelectorAll('[data-status^="shoulder"]').forEach(b => b.classList.remove('selected'));
+                    selectedShoulderStatus = value;
+                }
+                btn.classList.add('selected');
+            });
+        });
+
+        // Form submission
+        document.getElementById('log-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            if (!selectedDay) {
+                showMessage('Please select a day', 'error');
+                return;
+            }
+
+            const entry = {
+                id: Date.now(),
+                date: document.getElementById('date').value,
+                day: selectedDay,
+                exercise: document.getElementById('exercise').value,
+                side: document.getElementById('side').value,
+                setNumber: document.getElementById('setNumber').value,
+                reps: document.getElementById('reps').value || 0,
+                holdSeconds: document.getElementById('holdSeconds').value || 0,
+                load: document.getElementById('load').value,
+                rpe: document.getElementById('rpe').value || 0,
+                kneeStatus: selectedKneeStatus || 'same',
+                shoulderStatus: selectedShoulderStatus || 'same',
+                notes: document.getElementById('notes').value
+            };
+
+            workoutLog.push(entry);
+            localStorage.setItem('workoutLog', JSON.stringify(workoutLog));
+
+            showMessage(`✅ Set saved! (${entry.exercise})`, 'success');
+            document.getElementById('log-form').reset();
+            document.querySelectorAll('.day-btn').forEach(b => b.classList.remove('selected'));
+            document.querySelectorAll('.status-btn').forEach(b => b.classList.remove('selected'));
+            selectedDay = null;
+            selectedKneeStatus = null;
+            selectedShoulderStatus = null;
+        });
+
+        function showMessage(text, type = 'info') {
+            const msgDiv = document.getElementById('form-messages');
+            msgDiv.innerHTML = `<div class="alert alert-${type}">${text}</div>`;
+            setTimeout(() => msgDiv.innerHTML = '', 5000);
+        }
+
+        function renderPlanSelector() {
+            const selector = document.getElementById('plan-selector');
+            selector.innerHTML = '';
+            [1, 2, 3].forEach(day => {
+                const btn = document.createElement('button');
+                btn.className = 'day-btn';
+                btn.innerHTML = `Day ${day}`;
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('#plan-selector .day-btn').forEach(b => b.classList.remove('selected'));
+                    btn.classList.add('selected');
+                    renderPlan(day);
+                });
+                selector.appendChild(btn);
+            });
+            renderPlan(1);
+        }
+
+        function renderPlan(day) {
+            const plan = dayPlans[day];
+            const content = document.getElementById('plan-content');
+            
+            let html = `<h3>${plan.name}</h3>`;
+            
+            plan.exercises.forEach(ex => {
+                const lastSession = workoutLog.filter(e => e.exercise === ex.name).pop();
+                html += `
+                    <div class="exercise-block">
+                        <h4>${ex.name}</h4>
+                        <p><strong>Type:</strong> ${ex.type}</p>
+                        <p><strong>Details:</strong> ${ex.details}</p>
+                        ${lastSession ? `
+                            <p><small>Last Session: ${lastSession.holdSeconds ? lastSession.holdSeconds + 's hold' : lastSession.reps + ' reps'} @ RPE ${lastSession.rpe}</small></p>
+                        ` : '<p><small style="color: var(--color-text-muted);">No previous session</small></p>'}
+                    </div>
+                `;
+            });
+            
+            content.innerHTML = html;
+        }
+
+        function updateProgress() {
+            if (workoutLog.length === 0) {
+                document.getElementById('progress').innerHTML = '<div class="card"><p>No data yet. Start logging your workouts!</p></div>';
+                return;
+            }
+
+            document.getElementById('total-sessions').textContent = workoutLog.length;
+
+            const holdTimes = workoutLog.filter(e => e.holdSeconds > 0).map(e => parseInt(e.holdSeconds));
+            document.getElementById('avg-hold-time').textContent = holdTimes.length > 0 ? 
+                Math.round(holdTimes.reduce((a, b) => a + b, 0) / holdTimes.length) + 's' : '0s';
+
+            const rpes = workoutLog.filter(e => e.rpe).map(e => parseInt(e.rpe));
+            document.getElementById('avg-rpe').textContent = rpes.length > 0 ? 
+                (rpes.reduce((a, b) => a + b, 0) / rpes.length).toFixed(1) : '0';
+
+            // Exercise metrics
+            const exerciseStats = {};
+            workoutLog.forEach(e => {
+                if (!exerciseStats[e.exercise]) {
+                    exerciseStats[e.exercise] = { count: 0, totalHold: 0, maxHold: 0, avgRPE: 0, rpeCount: 0 };
+                }
+                exerciseStats[e.exercise].count++;
+                if (e.holdSeconds) {
+                    exerciseStats[e.exercise].totalHold += parseInt(e.holdSeconds);
+                    exerciseStats[e.exercise].maxHold = Math.max(exerciseStats[e.exercise].maxHold, parseInt(e.holdSeconds));
+                }
+                if (e.rpe) {
+                    exerciseStats[e.exercise].avgRPE += parseInt(e.rpe);
+                    exerciseStats[e.exercise].rpeCount++;
+                }
+            });
+
+            let metricsHTML = '<table><thead><tr><th>Exercise</th><th>Sets</th><th>Avg Hold</th><th>Max Hold</th><th>Avg RPE</th></tr></thead><tbody>';
+            Object.entries(exerciseStats).forEach(([exercise, stats]) => {
+                const avgHold = stats.totalHold > 0 ? Math.round(stats.totalHold / stats.count) : 0;
+                const avgRPE = stats.rpeCount > 0 ? (stats.avgRPE / stats.rpeCount).toFixed(1) : '-';
+                metricsHTML += `<tr>
+                    <td>${exercise}</td>
+                    <td>${stats.count}</td>
+                    <td>${avgHold}s</td>
+                    <td>${stats.maxHold}s</td>
+                    <td>${avgRPE}</td>
+                </tr>`;
+            });
+            metricsHTML += '</tbody></table>';
+            document.getElementById('exercise-metrics').innerHTML = metricsHTML;
+
+            // Status trend
+            const last10 = workoutLog.slice(-10);
+            let trendHTML = '';
+            last10.forEach(e => {
+                const kneeClass = `badge-${e.kneeStatus}`;
+                const shoulderClass = `badge-${e.shoulderStatus}`;
+                trendHTML += `
+                    <div style="margin-bottom: 10px; padding: 10px; background-color: var(--color-bg-primary); border-radius: 6px;">
+                        <small style="color: var(--color-text-muted);">${e.date} - ${e.exercise}</small><br>
+                        <span class="badge ${kneeClass}">Knee: ${e.kneeStatus}</span>
+                        <span class="badge ${shoulderClass}">Shoulder: ${e.shoulderStatus}</span>
+                    </div>
+                `;
+            });
+            document.getElementById('status-trend').innerHTML = trendHTML;
+        }
+
+        function renderHistory() {
+            if (workoutLog.length === 0) {
+                document.getElementById('history-table').innerHTML = '<p>No workouts logged yet.</p>';
+                return;
+            }
+
+            let html = '<table><thead><tr><th>Date</th><th>Day</th><th>Exercise</th><th>Side</th><th>Reps</th><th>Hold (s)</th><th>Load</th><th>RPE</th><th>Knee</th><th>Shoulder</th><th>Notes</th><th>Action</th></tr></thead><tbody>';
+
+            workoutLog.slice().reverse().forEach(entry => {
+                const kneeClass = `badge-${entry.kneeStatus}`;
+                const shoulderClass = `badge-${entry.shoulderStatus}`;
+                html += `<tr>
+                    <td>${entry.date}</td>
+                    <td>${entry.day}</td>
+                    <td>${entry.exercise}</td>
+                    <td>${entry.side}</td>
+                    <td>${entry.reps || '-'}</td>
+                    <td>${entry.holdSeconds || '-'}</td>
+                    <td><small>${entry.load || 'N/A'}</small></td>
+                    <td>${entry.rpe || '-'}</td>
+                    <td><span class="badge ${kneeClass}">${entry.kneeStatus}</span></td>
+                    <td><span class="badge ${shoulderClass}">${entry.shoulderStatus}</span></td>
+                    <td><small>${entry.notes || '-'}</small></td>
+                    <td><button class="delete-btn" onclick="deleteEntry(${entry.id})">Delete</button></td>
+                </tr>`;
+            });
+
+            html += '</tbody></table>';
+            document.getElementById('history-table').innerHTML = html;
+        }
+
+        function deleteEntry(id) {
+            if (confirm('Delete this entry?')) {
+                workoutLog = workoutLog.filter(e => e.id !== id);
+                localStorage.setItem('workoutLog', JSON.stringify(workoutLog));
+                renderHistory();
+            }
+        }
+
+        // Export data
+        document.getElementById('export-data').addEventListener('click', () => {
+            const dataStr = JSON.stringify(workoutLog, null, 2);
+            const blob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `iso-tracker-${new Date().toISOString().split('T')[0]}.json`;
+            a.click();
+        });
+
+        // Clear data
+        document.getElementById('clear-data').addEventListener('click', () => {
+            if (confirm('Delete ALL workout data? This cannot be undone.')) {
+                workoutLog = [];
+                localStorage.clear();
+                renderHistory();
+                showMessage('All data cleared', 'success');
+            }
+        });
+    </script>
+</body>
+</html>
